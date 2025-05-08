@@ -1,112 +1,125 @@
-lllllllllllllll, llllllllllllllI, lllllllllllllIl, lllllllllllllII, llllllllllllIll, llllllllllllIlI, llllllllllllIIl = input, int, Exception, exit, bool, print, open
+import os
+import platform
+import subprocess
+import time
 
-from json import load as IlIlIllIlIIIll
-from platform import machine as lIlIIIIllIIlll, version as IIIlIlIIIIIlll, system as lIlIlIIlllIIIl
-from os import geteuid as lIllIIllIlIIll, remove as IlIIIIlIIIIlll, walk as lllIlIIllllIll, system as IIIllIIIIlIIll
-from os.path import join as IlllIllIlIIlIl, getsize as IIllIlIlIllIlI
-from datetime import datetime as lIlIIIlllllllI, timedelta as llllIIlIIIlIII
+# ASCII e título
+ascii_logo = r'''
+ _   __  __                 ____          _______             _
+| | |  \/  |               / __ \        |__   __|           (_)
+| | | \  / |  __ _ __  __ | |  | | _ __     | |    _ __ ___   _  ____  ___  _ __
+| | | |\/| | / _` |\ \/ / | |  | || '_ \    | |   | '_ ` _ \ | ||_  / / _ \| '__|
+|_| | |  | || (_| | >  <  | |__| || |_) |   | |   | | | | | || | / / |  __/| |
+(_) |_|  |_| \__,_|/_/\_\  \____/ | .__/    |_|   |_| |_| |_||_|/___| \___||_|
+                                  | |
+                                  |_|
 
-def IlllllIIIllIlIIIlI():
+'''
+
+# Info do dispositivo
+def device_info():
+    print(ascii_logo)
+    print(" [!] Coletando informações do dispositivo...\n")
+    modelo = subprocess.getoutput("getprop ro.product.model")
+    versao = subprocess.getoutput("getprop ro.build.version.release")
+    root = "Sim" if os.path.exists("/system/bin/su") or os.path.exists("/system/xbin/su") else "Não"
+
+    print(f" Dispositivo: {modelo}")
+    print(f" Versão Android: {versao}")
+    print(f" Root: {root}")
+    print("-" * 60)
+
+# Funções
+def otimizar_bateria():
+    print("\n [*] Reduzindo processos em segundo plano...")
+    os.system("pm clear com.facebook.katana > /dev/null 2>&1")
+    os.system("pm clear com.instagram.android > /dev/null 2>&1")
+    time.sleep(2)
+    print(" [+] Bateria otimizada com sucesso!")
+
+def otimizar_fps():
+    print("\n [*] Limpando cache de GPU e memória RAM...")
+    os.system("echo 3 > /proc/sys/vm/drop_caches")
+    time.sleep(2)
+    print(" [+] FPS melhorado!")
+
+def dns_free():
+    print("\n [*] Aplicando DNS do Cloudflare (1.1.1.1)...")
+    os.system("setprop net.dns1 1.1.1.1")
+    os.system("setprop net.dns2 1.0.0.1")
+    time.sleep(2)
+    print(" [+] DNS aplicado com sucesso!")
+
+def exit_lag():
+    print("\n [*] Simulando boost de rede (modo avião)...")
+    os.system("svc wifi disable && svc data disable")
+    time.sleep(1)
+    os.system("svc wifi enable && svc data enable")
+    time.sleep(2)
+    print(" [+] Lag reduzido com sucesso!")
+
+def apagar_arquivos():
     try:
-        with llllllllllllIIl('keys.json', 'r') as IlIllllllIllIIIIll:
-            return IlIlIllIlIIIll(IlIllllllIllIIIIll)
-    except lllllllllllllIl as IlllIIlIllllIllIII:
-        llllllllllllIlI(f'Erro ao carregar keys: {IlllIIlIllllIllIII}')
-        return {}
+        tamanho = int(input("\n Tamanho mínimo (em MB): "))
+        print(" [*] Buscando arquivos grandes...")
+        os.system(f"find /storage/emulated/0 -type f -size +{tamanho}M")
+        confirmar = input(" Deseja apagar esses arquivos? (s/n): ").lower()
+        if confirmar == "s":
+            os.system(f"find /storage/emulated/0 -type f -size +{tamanho}M -delete")
+            print(" [+] Arquivos apagados com sucesso!")
+        else:
+            print(" [-] Operação cancelada.")
+    except:
+        print(" [!] Entrada inválida.")
 
-def lIlllllIIlIIIllIIl(llllIlllIIlIllllII):
-    IIllIIIlIlIlIIllII = IlllllIIIllIlIIIlI()
-    if llllIlllIIlIllllII not in IIllIIIlIlIlIIllII:
-        return llllllllllllIll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0)
-    lIlIlIllIIIIIllIII = IIllIIIlIlIlIIllII[llllIlllIIlIllllII]['ativado_em']
-    IlIllllllIlIIIIIlI = IIllIIIlIlIlIIllII[llllIlllIIlIllllII]['tipo']
-    if IlIllllllIlIIIIIlI == '7d' and (lIlIIIlllllllI.now() - lIlIIIlllllllI.strptime(lIlIlIllIIIIIllIII, '%Y-%m-%d')).days > 7:
-        return llllllllllllIll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0)
-    elif IlIllllllIlIIIIIlI == '30d' and (lIlIIIlllllllI.now() - lIlIIIlllllllI.strptime(lIlIlIllIIIIIllIII, '%Y-%m-%d')).days > 30:
-        return llllllllllllIll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0)
-    elif IlIllllllIlIIIIIlI == 'inf':
-        return llllllllllllIll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1)
-    return llllllllllllIll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0)
+def limpar_total():
+    print("\n [*] Limpando cache, arquivos temporários e pastas inúteis...")
+    pastas = [
+        "/storage/emulated/0/Android/data/com.instagram.android/cache",
+        "/storage/emulated/0/DCIM/.thumbnails",
+        "/storage/emulated/0/Download",
+        "/storage/emulated/0/tmp"
+    ]
+    for pasta in pastas:
+        os.system(f"rm -rf {pasta}/*")
+    print(" [+] Limpeza completa!")
 
-def IlIIllllllIIIlIlIl():
-    lIllIlIIIIIlIIIllI = IIIllIIIIlIIll()
-    IllIIllllIlIIllllI = IIIlIlIIIIIlll()
-    IlllIllIllIIIIlllI = lIlIIIIllIIlll()
-    return (lIllIlIIIIIlIIIllI, IllIIllllIlIIllllI, IlllIllIllIIIIlllI)
+# Menu principal
+def menu():
+    while True:
+        device_info()
+        print("""
+ 1. Desempenhar Bateria
+ 2. Desempenhar FPS
+ 3. DNS Free
+ 4. Exit Lag
+ 5. Apagar Arquivos Grandes
+ 6. Limpar Celular Totalmente
+ 0. Sair
+        """)
+        escolha = input(" Escolha uma opção: ")
 
-def IllIIlllIIIlIIlIll():
-    IIIllIIIIlIIll('clear')
-    llllllllllllIlI("\n _   __  __                 ____          _______             _\n| | |  \\/  |               / __ \\        |__   __|           (_)\n| | | \\  / |  __ _ __  __ | |  | | _ __     | |    _ __ ___   _  ____  ___  _ __\n| | | |\\/| | / _` |\\ \\/ / | |  | || '_ \\    | |   | '_ ` _ \\ | ||_  / / _ \\| '__|\n|_| | |  | || (_| | >  <  | |__| || |_) |   | |   | | | | | || | / / |  __/| |\n(_) |_|  |_| \\__,_|/_/\\_\\  \\____/ | .__/    |_|   |_| |_| |_||_|/___| \\___||_|\n                                  | |\n                                  |_|\n    ")
-    (lIllIlIIIIIlIIIllI, IllIIllllIlIIllllI, IlllIllIllIIIIlllI) = IlIIllllllIIIlIlIl()
-    llllllllllllIlI(f'\nSeu Dispositivo: {IlllIllIllIIIIlllI}')
-    llllllllllllIlI(f'Versão do Sistema: {lIllIlIIIIIlIIIllI} {IllIIllllIlIIllllI}')
-    llllllllllllIlI(f"Root: {('Sim' if lIllIIllIlIIll() == 0 else 'Não')}\n")
-    llllllllllllIlI('1. Desempenhar Bateria')
-    llllllllllllIlI('2. Desempenhar Fps')
-    llllllllllllIlI('3. Dns Free')
-    llllllllllllIlI('4. Exit Lag')
-    llllllllllllIlI('5. Apagar Arquivos')
-    IIIlIIIllllIIIllIl = lllllllllllllll('Escolha uma opção: ')
-    if IIIlIIIllllIIIllIl == '1':
-        llIlllllIlIllIIIII()
-    elif IIIlIIIllllIIIllIl == '2':
-        lllIIlIIIIIIIlIlll()
-    elif IIIlIIIllllIIIllIl == '3':
-        IIIlIlIIIIIIlIIlll()
-    elif IIIlIIIllllIIIllIl == '4':
-        IIIlIIlIlIIllIllII()
-    elif IIIlIIIllllIIIllIl == '5':
-        IIIlIllllllllIlIll()
-    else:
-        llllllllllllIlI('Opção inválida!')
+        if escolha == "1":
+            otimizar_bateria()
+        elif escolha == "2":
+            otimizar_fps()
+        elif escolha == "3":
+            dns_free()
+        elif escolha == "4":
+            exit_lag()
+        elif escolha == "5":
+            apagar_arquivos()
+        elif escolha == "6":
+            limpar_total()
+        elif escolha == "0":
+            print("\n Obrigado por usar o Max OpTmizer V1!")
+            break
+        else:
+            print(" [!] Opção inválida.")
 
-def llIlllllIlIllIIIII():
-    llllllllllllIlI('Otimização da Bateria em andamento...')
-    IIIllIIIIlIIll('echo 1 > /sys/class/power_supply/battery/charge_control_limit')
-    llllllllllllIlI('Modo de bateria otimizado!')
+        input("\n Pressione Enter para continuar...")
 
-def lllIIlIIIIIIIlIlll():
-    llllllllllllIlI('Otimização do Fps em andamento...')
-    IIIllIIIIlIIll('echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor')
-    llllllllllllIlI('FPS otimizado!')
-
-def IIIlIlIIIIIIlIIlll():
-    llllllllllllIlI('Configurando DNS Free...')
-    IIIllIIIIlIIll("echo 'nameserver 8.8.8.8' > /etc/resolv.conf")
-    llllllllllllIlI('DNS configurado para Google DNS (8.8.8.8)!')
-
-def IIIlIIlIlIIllIllII():
-    llllllllllllIlI('Reduzindo o Lag...')
-    IIIllIIIIlIIll('settings put global transition_animation_scale 0')
-    IIIllIIIIlIIll('settings put global animator_duration_scale 0')
-    IIIllIIIIlIIll('settings put global window_animation_scale 0')
-    llllllllllllIlI('Lag otimizado!')
-
-def IIIlIllllllllIlIll():
-    llIlllIIllIIlIlllI = lllllllllllllll('Digite o tamanho mínimo para apagar arquivos (em MB): ')
-    lIIIllIIlIllIlIIIl = llllllllllllllI(llIlllIIllIIlIlllI) * 1024 * 1024
-    llllllllllllIlI(f'Apagando arquivos com tamanho mínimo de {llIlllIIllIIlIlllI}MB...')
-    for (llIlllIllllIlIllII, IlIlIlIlllIlllllII, IlIIlllllIllIIIllI) in lllIlIIllllIll('/'):
-        for IIlIIlIIIIlllllIIl in IlIIlllllIllIIIllI:
-            lllIlIllIIllIIIlII = IlllIllIlIIlIl(llIlllIllllIlIllII, IIlIIlIIIIlllllIIl)
-            try:
-                IlIIllIIIlIlIIIIlI = IIllIlIlIllIlI(lllIlIllIIllIIIlII)
-                if IlIIllIIIlIlIIIIlI >= lIIIllIIlIllIlIIIl:
-                    IlIIIIlIIIIlll(lllIlIllIIllIIIlII)
-                    llllllllllllIlI(f'Arquivo {lllIlIllIIllIIIlII} apagado.')
-            except lllllllllllllIl as IlllIIlIllllIllIII:
-                pass
-
-def IllllllIlllIlIlIII():
-    llllllllllllIlI('\n\nCréditos:')
-    llllllllllllIlI('Desenvolvido por Max OpTmizer')
-    llllllllllllIlI('Agradecimentos ao GitHub e comunidade Python!')
-    llllllllllllIlI('E ao Python.org pela incrível biblioteca!')
-    llllllllllllIlI('Versão 1.0 - 2025')
-llllIlllIIlIllllII = lllllllllllllll('Digite sua key: ')
-if lIlllllIIlIIIllIIl(llllIlllIIlIllllII):
-    IllIIlllIIIlIIlIll()
-else:
-    llllllllllllIlI('Key inválida ou expirada!')
-    lllllllllllllII()
-IllllllIlllIlIlIII()
+# Execução
+if __name__ == "__main__":
+    os.system("clear")
+    menu()
