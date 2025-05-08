@@ -1,0 +1,9 @@
+# Ignorar o arquivo de keys
+keys.json
+
+# Ignorar qualquer outra configuração sensível
+*.key
+*.log
+
+# Ignorar diretórios temporários
+dist/
