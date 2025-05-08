@@ -1,5 +1,6 @@
 # Ignorar o arquivo de keys
 keys.json
+painel.py
 
 # Ignorar qualquer outra configuração sensível
 *.key
