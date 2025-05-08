@@ -1,0 +1,5 @@
+{
+  "Admin-1234": { "tipo": "inf", "ativado_em": null },
+  "SUA-KEY-PRIVADA-2": { "tipo": "30d", "ativado_em": "2025-05-01" },
+  "SUA-KEY-PRIVADA-3": { "tipo": "7d", "ativado_em": "2025-05-01" }
+}
